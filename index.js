@@ -11,7 +11,7 @@ const corsConfig = {
     Credential: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
 }
-app.use(cors(corsConfig));
+app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.n3rdf37.mongodb.net/?retryWrites=true&w=majority`;
@@ -29,6 +29,13 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+    const productsCollection = client.db('DisneyDollsDB').collection('products');
+    app.get('/products', async (req, res) => {
+      const cursor = productsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+  })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
