@@ -5,7 +5,6 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const port = process.env.PORT || 5000;
 //middleware
-//https://disney-dolls-server.vercel.app
 const corsConfig = {
     origin: '*',
     Credential: true,
@@ -15,7 +14,6 @@ app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.n3rdf37.mongodb.net/?retryWrites=true&w=majority`;
-
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
@@ -40,7 +38,7 @@ async function run() {
     const id = req.params.id;
     const query = { _id: new ObjectId(id) }
     const options = {
-        projection: { toy_img: 1, toy_name: 1, displayName: 1, email:1, price:1, ratings:1, quantity:1, description: 1, products_id:1 },
+        projection: { toy_img: 1, toy_name: 1, displayName: 1, category:1, email:1, price:1, ratings:1, quantity:1, description: 1, products_id:1 },
     };
     const result = await productsCollection.findOne(query, options);
     res.send(result);
