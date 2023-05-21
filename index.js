@@ -76,8 +76,7 @@ async function run() {
       try {
         if (req.query?.email) {
           query = { email: req.query.email }
-          const sort = req.query?.sort == 'true' ? 1 : -1;
-          const result = await productsCollection.find(query).sort({ price: sort }).toArray();
+          const result = await productsCollection.find(query).toArray();
           res.send(result);
         }
         else {
@@ -96,13 +95,30 @@ async function run() {
       const result = await productsCollection.insertOne(addToys);
       res.send(result);
     });
-  //for delete 
-  app.delete('/product/:id', async (req, res) => {
-    const id = req.params.id;
-    const query = { _id: new ObjectId(id) }
-    const result = await productsCollection.deleteOne(query);
-    res.send(result);
-})
+    //for update
+    app.put("/product/:id", async (req, res) => {
+      const id = req.params.id;
+      const body = req.body;
+      console.log(body);
+      const options = { upsert: true };
+      const filter = { _id: new ObjectId(id) };
+      const updateData = {
+        $set: {
+          price: body.price,
+          quantity: body.quantity,
+          description: body.description,
+        },
+      };
+      const result = await productsCollection.updateOne(filter, updateData, options);
+      res.send(result);
+    });
+    //for delete 
+    app.delete('/product/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await productsCollection.deleteOne(query);
+      res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
