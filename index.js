@@ -71,12 +71,13 @@ async function run() {
     });
     //for my toys data
     app.get('/sellerToys', async (req, res) => {
-      console.log(req.query.email);
+      console.log(req.query.sort);
       let query = {};
       try {
         if (req.query?.email) {
           query = { email: req.query.email }
-          const result = await productsCollection.find(query).toArray();
+          const sort = req?.query?.sort == 'true' ? 1 : -1;
+          const result = await productsCollection.find(query).sort({ price: sort }).toArray();
           res.send(result);
         }
         else {
@@ -91,7 +92,6 @@ async function run() {
     //for add toys
     app.post('/products', async (req, res) => {
       const addToys = req.body;
-      console.log(addToys);
       const result = await productsCollection.insertOne(addToys);
       res.send(result);
     });
@@ -99,7 +99,6 @@ async function run() {
     app.put("/product/:id", async (req, res) => {
       const id = req.params.id;
       const body = req.body;
-      console.log(body);
       const options = { upsert: true };
       const filter = { _id: new ObjectId(id) };
       const updateData = {
